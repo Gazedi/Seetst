@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload</title>
+  <style>
+    :root {
+      --bg: #fff;
+      --text: #222;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --nav-icon-color: #5a3dff;
+      --btn-bg: #007bff;
+      --btn-hover: #0056b3;
+    }
+
+    .dark {
+      --bg: #121212;
+      --text: #ddd;
+      --input-bg: #1e1e1e;
+      --input-border: #333;
+      --nav-icon-color: #8a79ff;
+      --btn-bg: #3399ff;
+      --btn-hover: #2a6fb0;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 10px 140px; /* Bottom padding for nav */
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;  /* Increased width */
+      background: var(--input-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 36px 48px 48px; /* Bigger padding */
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .upload-guide {
+      font-weight: 700;
+      font-size: 24px;  /* Bigger font */
+      margin-bottom: 32px;
+      color: var(--nav-icon-color);
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 18px;  /* Bigger label font */
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 16px;    /* Larger padding */
+      border-radius: 10px;
+      border: 1.5px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text);
+      box-sizing: border-box;
+      font-size: 18px;  /* Larger input font */
+      transition: border-color 0.3s ease;
+      resize: vertical;
+      min-height: 48px;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--nav-icon-color);
+      outline: none;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 18px;
+      background-color: var(--btn-bg);
+      color: white;
+      font-weight: 800;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 20px;  /* Bigger button font */
+      transition: background-color 0.3s ease;
+      margin-top: 16px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--btn-hover);
+    }
+
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg);
+      border-top: 1px solid var(--input-border);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 100;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      font-size: 0;
+      cursor: pointer;
+      color: var(--nav-icon-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 60px;
+    }
+
+    nav button svg {
+      width: 26px;
+      height: 26px;
+      fill: currentColor;
+    }
+
+    nav button.active {
+      color: #2a00ff;
+    }
+
+    nav button span {
+      font-size: 12px;
+      pointer-events: none;
+      color: var(--nav-icon-color);
+    }
+
+    /* Popup */
+    #popup {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #4CAF50;
+      color: white;
+      padding: 20px 36px;
+      font-weight: bold;
+      font-size: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 9999;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="">
+    <div class="container">
+      <div class="upload-guide">Upload your post details below</div>
+      <form id="uploadForm">
+        <div class="form-group">
+          <label for="title">Post Title</label>
+          <input type="text" id="title" placeholder="Enter a title" required />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" placeholder="Write something..." rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="mediaLink">YouTube URL (Optional)</label>
+          <input type="text" id="mediaLink" placeholder="https://youtube.com/..." />
+        </div>
+
+        <button type="submit">Publish Post</button>
+      </form>
+    </div>
+
+    <nav>
+      <button id="homeBtn">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </button>
+      <button id="uploadBtn" class="active">
+        <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4v-6h3l-5-5z"/></svg>
+        <span>Upload</span>
+      </button>
+      <button id="profileBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zm0-2a4 4 0 100-8 4 4 0 000 8z"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <div id="popup">Post Published Successfully!</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQmITxB40DaUu4eiMGnFw8AGi9wXAnMJg",
+      authDomain: "billpayapp-1eecf.firebaseapp.com",
+      projectId: "billpayapp-1eecf",
+      storageBucket: "billpayapp-1eecf.appspot.com",
+      messagingSenderId: "806019984854",
+      appId: "1:806019984854:web:8637618a0f62db48a30877"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const uploadForm = document.getElementById('uploadForm');
+    const titleInput = document.getElementById('title');
+    const descInput = document.getElementById('description');
+    const mediaLinkInput = document.getElementById('mediaLink');
+    const popup = document.getElementById('popup');
+    const appDiv = document.getElementById('app');
+
+    function loadTheme() {
+      const theme = localStorage.getItem('theme') || 'light';
+      appDiv.classList.toggle('dark', theme === 'dark');
+    }
+    loadTheme();
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        alert('Please login first.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      uploadForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const title = titleInput.value.trim();
+        const description = descInput.value.trim();
+        const mediaLink = mediaLinkInput.value.trim();
+
+        if (!title) {
+          alert("Please enter a post title.");
+          return;
+        }
+
+        try {
+          await addDoc(collection(db, 'posts'), {
+            title,
+            description,
+            mediaLink: mediaLink || '',
+            mediaType: mediaLink ? "video" : "",
+            timestamp: serverTimestamp(),
+            userEmail: user.email
+          });
+
+          popup.style.display = 'block';
+          setTimeout(() => {
+            popup.style.display = 'none';
+            window.location.href = 'feed.html';
+          }, 2500);
+
+          uploadForm.reset();
+        } catch (err) {
+          console.error('Upload failed:', err);
+          alert('Upload failed!');
+        }
+      });
+    });
+
+    // Navigation button events
+    document.getElementById('homeBtn').onclick = () => window.location.href = 'feed.html';
+    document.getElementById('uploadBtn').onclick = () => window.location.href = 'upload.html';
+    document.getElementById('profileBtn').onclick = () => window.location.href = 'profile.html';
+
+    // Live theme sync
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'theme') loadTheme();
+    });
+  </script>
+</body>
+</html>
+
